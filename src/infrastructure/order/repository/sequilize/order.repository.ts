@@ -1,8 +1,9 @@
+import RepositoryInterface from "../../../../domain/@shared/repository/repository-interface";
 import Order from "../../../../domain/checkout/entity/order";
 import OrderItemModel from "./order-item.model";
 import OrderModel from "./order.model";
 
-export default class OrderRepository {
+export default class OrderRepository implements RepositoryInterface<Order> {
   async create(entity: Order): Promise<void> {
     await OrderModel.create(
       {
@@ -21,5 +22,26 @@ export default class OrderRepository {
         include: [{ model: OrderItemModel }],
       }
     );
+  }
+  
+  async update(entity: Order): Promise<void> {
+    await OrderModel.update(
+      {
+        items: entity.items
+      },
+      {
+        where: {
+          id: entity.id,
+        },
+      }
+    );
+  }
+
+  async find(id: string): Promise<Order> {
+    throw new Error("Method not implemented.");
+  }
+
+  async findAll(): Promise<Order[]> {
+    throw new Error("Method not implemented.");
   }
 }
