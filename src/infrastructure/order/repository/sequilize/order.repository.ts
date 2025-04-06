@@ -1,5 +1,6 @@
 import RepositoryInterface from "../../../../domain/@shared/repository/repository-interface";
 import Order from "../../../../domain/checkout/entity/order";
+import OrderItem from "../../../../domain/checkout/entity/order_item";
 import OrderItemModel from "./order-item.model";
 import OrderModel from "./order.model";
 
@@ -38,7 +39,18 @@ export default class OrderRepository implements RepositoryInterface<Order> {
   }
 
   async find(id: string): Promise<Order> {
-    throw new Error("Method not implemented.");
+      const orderModel = await OrderModel.findOne({
+        where: { id },
+        include: ["items"]
+      });
+      const items = orderModel.items.map((item) => new OrderItem(
+        item.id,
+        item.name,
+        item.price,
+        item.product_id,
+        item.quantity
+      ));
+      return new Order(orderModel.id, orderModel.customer_id, items);
   }
 
   async findAll(): Promise<Order[]> {
